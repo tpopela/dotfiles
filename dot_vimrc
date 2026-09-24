@@ -1,0 +1,267 @@
+set nocompatible              " be iMproved, required
+filetype off                  " required
+
+" set the runtime path to include Vundle and initialize
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
+
+" let Vundle manage Vundle, required
+Plugin 'VundleVim/Vundle.vim.git'
+Plugin 'ctrlpvim/ctrlp.vim'
+Plugin 'bogado/file-line'
+Plugin 'tpope/vim-fugitive.git'
+Plugin 'tpope/vim-eunuch'
+Plugin 'scrooloose/nerdtree'
+Plugin 'derekwyatt/vim-fswitch'
+Plugin 'Yggdroot/indentLine.git'
+Plugin 'tpope/vim-unimpaired.git'
+Plugin 'tpope/vim-sensible'
+Plugin 'tpope/vim-sleuth.git'
+Plugin 'airblade/vim-gitgutter.git'
+Plugin 'ntpeters/vim-better-whitespace.git'
+Plugin 'bling/vim-airline'
+Plugin 'tomasr/molokai.git'
+Plugin 'majutsushi/tagbar'
+Plugin 'bling/vim-bufferline'
+Plugin 'scrooloose/nerdcommenter'
+Plugin 'vim-scripts/vim-auto-save'
+Plugin 'NLKNguyen/papercolor-theme'
+
+" All of your Plugins must be added before the following line
+call vundle#end()            " required
+filetype plugin indent on    " required
+
+" autocmd ColorScheme * highlight! Normal ctermbg=NONE guibg=NONE
+
+" Let vim know about aliases
+let $BASH_ENV = "~/.bash_aliases"
+
+set term=xterm-256color
+
+set encoding=utf8
+
+" set listchars=eol:•,tab:→\ ,trail:␣,extends:↷,precedes:↶,nbsp:⁔
+" set list
+
+set t_Co=256
+" silent is here to not warn in molokai is not available
+" silent! colorscheme molokai
+set background=dark
+silent! colorscheme PaperColor
+
+"fun! s:set_bg(timer_id)
+    "let &background = (strftime('%H') < 12 ? 'light' : 'dark')
+"    let s = execute(":! printf (\"\e]11;?\a)\") | echo strtrans(s)
+"endfun
+
+"call timer_start(1000 * 60, function('s:set_bg'), {'repeat': -1})
+
+"call s:set_bg(0)  " Run on startup
+
+set nocompatible
+
+let mapleader = ","
+
+syntax on
+filetype on
+filetype plugin on
+filetype indent on
+
+set history=1000
+set number
+
+set hidden
+
+set iskeyword=@,~,48-57,_,192-255
+
+set nobackup
+set nowritebackup
+set noswapfile
+
+set noerrorbells
+set novisualbell
+set t_vb=
+" turn off error beep/flash
+set visualbell t_vb=
+
+" scroll offset
+set scrolloff=3
+set sidescroll=5
+
+" auto complete of vim commands
+" set wildchar=<Tab>
+" set wildmode=longest:full,full
+
+set nowrap
+set showmatch
+set hlsearch
+set incsearch
+set ignorecase
+set smartcase
+nmap n nzz
+nmap N Nzz
+
+set autowrite
+set directory=~/.vim/tmp
+set mouse=a
+set showcmd
+
+set spell
+
+set autochdir
+
+" different background after 80 characters
+let &colorcolumn=join(range(81,999),",")
+
+" Limit the width to 80 characters for MD files
+au BufRead,BufNewFile *.md setlocal textwidth=80
+
+if has('gui_running')
+  set guioptions-=T
+endif
+
+if has("multi_byte")
+  set fillchars=stl:\ ,stlnc:\ ,vert:┆,fold:-,diff:-
+else
+  set fillchars=stl:\ ,stlnc:\ ,vert:\|,fold:-,diff:-
+endif
+
+set formatoptions=croq1
+
+" IndentLine
+let g:indentLine_showFirstIndentLevel = 1
+let g:indentLine_color_term = 239
+let g:indentLine_faster = 1
+
+set tabstop=4
+set list
+set listchars=tab:<->
+
+set mousemodel=popup
+set clipboard=unnamed,unnamedplus
+
+vnoremap u <NOP>
+
+xnoremap <Tab> >gv
+au BufEnter * xnoremap <Tab> >gv
+
+xnoremap <BS> <gv
+
+"augroup DetectIndent
+"  autocmd!
+"  autocmd BufReadPost *  DetectIndent
+"augroup END
+
+function! ProjectCompile (shift)
+  if match (expand ('%:p'), 'evolution') != -1
+    if (a:shift)
+      :!clear && mi v
+    else
+      :!clear && mi
+    endif
+  elseif match (expand ('%:p'), 'WebKit') != -1
+    if (a:shift)
+      :!clear && bwd
+    else
+      :!clear && bw
+    endif
+  else
+    :!clear && b
+  endif
+endfunction
+
+nmap <F5> :call ProjectCompile("") <CR>
+imap <F5> <ESC>:call ProjectCompile("shift") <CR>
+
+function! ProjectSetEnv ()
+  let project_evo = 0
+  let project_evo_wk2 = 1
+  let project_wk = 0
+  let project_none = 0
+
+  if match (expand ('%:p'), 'evolution') != -1
+    let project_evo = 1
+    if match (expand ('%:p'), 'wk1') != -1
+      let project_evo_wk2 = 0
+    endif
+  elseif match (expand ('%:p'), 'WebKit') != -1
+    let project_wk = 1
+  else
+    let project_none = 0
+  endif
+
+  if project_wk
+    set tabstop=4
+    set expandtab
+    set shiftwidth=4
+  endif
+
+  if project_evo
+    set tabstop=8
+  endif
+
+  if project_evo_wk2
+    let @w = "o{ WebKitDOMDocument *dom_document = document; gchar *body_content = webkit_dom_element_get_outer_html (WEBKIT_DOM_ELEMENT (webkit_dom_document_get_body (dom_document))); printf (\"BODY CONTENT DUMP IN %s:%d\\n%s\\n\", __PRETTY_FUNCTION__, __LINE__, body_content); g_free (body_content);}^^"
+  else
+    let @w = "o{ WebKitDOMDocument *dom_document = webkit_web_view_get_dom_document (WEBKIT_WEB_VIEW (view)); gchar *body_content = webkit_dom_html_element_get_outer_html (WEBKIT_DOM_HTML_ELEMENT (webkit_dom_document_get_body (dom_document))); printf (\"BODY CONTENT DUMP IN %s:%d\\n%s\\n\", __PRETTY_FUNCTION__, __LINE__, body_content); g_free (body_content);}^^"
+  endif
+  let @s = "oprintf (\"%s:%d\\n\", __PRETTY_FUNCTION__, __LINE__);"
+  let @e = "oGTimer *timer = g_timer_new ();"
+  let @d = "o{ GTimer* timer_end = timer; g_timer_stop (timer_end); printf (\"Elapsed Time for %s:%d: %lf ms\\n\", __PRETTY_FUNCTION__, __LINE__, g_timer_elapsed (timer_end, NULL) * 1000.0); g_timer_destroy (timer_end); }^"
+  if project_evo_wk2
+    let @n = "o{ WebKitDOMNode *tested = WEBKIT_DOM_NODE (); const gchar* prefix = \"\"; if (WEBKIT_DOM_IS_TEXT (tested)) { gchar *node_text_content = webkit_dom_node_get_text_content (tested); printf (\"%s text - \'%s\'\", prefix, node_text_content); g_free (node_text_content); } else if (tested && WEBKIT_DOM_IS_DOCUMENT_FRAGMENT (tested)) { printf (\"%s - \'%s\'\", prefix, dom_get_node_inner_html (tested)); } else if (tested && !WEBKIT_DOM_IS_ELEMENT (tested)) printf (\"%s %s\", prefix, G_OBJECT_TYPE_NAME (tested)); else if (tested) printf (\"%s %s #\'%s\' .\'%s\' - \'%s\'\", prefix, WEBKIT_DOM_IS_ELEMENT (tested) ? webkit_dom_element_get_tag_name (WEBKIT_DOM_ELEMENT (tested)) : \"\", webkit_dom_element_get_id (WEBKIT_DOM_ELEMENT (tested)), webkit_dom_element_get_class_name (WEBKIT_DOM_ELEMENT (tested)), webkit_dom_element_get_outer_html (WEBKIT_DOM_ELEMENT (tested))); else printf (\"%s NULL\", prefix); printf (\" at %s:%d\\n\", __PRETTY_FUNCTION__, __LINE__);}^43li"
+  else
+    let @n = "o{ WebKitDOMNode *tested = WEBKIT_DOM_NODE (); const gchar* prefix = \"\"; if (WEBKIT_DOM_IS_TEXT (tested)) { gchar *node_text_content = webkit_dom_node_get_text_content (tested); printf (\"%s text - \'%s\'\", prefix, node_text_content); g_free (node_text_content); } else if (tested && !WEBKIT_DOM_IS_ELEMENT (tested)) printf (\"%s %s\", prefix, G_OBJECT_TYPE_NAME (tested)); else if (tested) printf (\"%s %s #\'%s\' .\'%s\' - \'%s\'\", prefix, WEBKIT_DOM_IS_ELEMENT (tested) ? webkit_dom_element_get_tag_name (WEBKIT_DOM_ELEMENT (tested)) : \"\", webkit_dom_element_get_id (WEBKIT_DOM_ELEMENT (tested)), webkit_dom_element_get_class_name (WEBKIT_DOM_ELEMENT (tested)), webkit_dom_html_element_get_outer_html (WEBKIT_DOM_HTML_ELEMENT (tested))); else printf (\"%s NULL\", prefix); printf (\" at %s:%d\\n\", __PRETTY_FUNCTION__, __LINE__);}^43li"
+  endif
+  let @p = "oprintf (\"%s:%d - (%p)\\n\", __PRETTY_FUNCTION__, __LINE__, );^57li"
+endfunction
+
+autocmd BufEnter * :call ProjectSetEnv()
+
+map  <C-Tab> :bnext <CR>
+imap <C-Tab> <ESC> :bnext <CR>
+map  <C-S-Tab> :bprevious <CR>
+imap <C-S-Tab> <ESC> :brevious <CR>
+map <S-Insert> <MiddleMouse>
+map! <S-Insert> <MiddleMouse>
+
+" GitGutter
+let g:gitgutter_max_signs = 2000
+set updatetime=100
+"let g:gitgutter_realtime = 750
+
+" TagBar
+nmap <F2> :TagbarToggle<CR>
+let g:tagbar_left = 1
+
+" NerdTree
+map <C-n> :NERDTreeToggle<CR>
+autocmd BufEnter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif
+
+set laststatus=2
+autocmd InsertEnter * hi StatusLine term=NONE cterm=bold ctermbg=0 ctermfg=3 guifg=#ffff00 guibg=#000000 gui=bold
+autocmd InsertLeave * hi StatusLine term=NONE cterm=bold ctermbg=0 ctermfg=2 guifg=#00ff00 guibg=#000000 gui=bold
+hi StatusLine term=NONE cterm=bold ctermbg=0 ctermfg=2 guifg=#00ff00 guibg=#000000 gui=bold
+
+" AirLine
+let g:airline_powerline_fonts = 1
+" let g:airline#extensions#tabline#enabled = 1
+let g:airline#extensions#bufferline#enabled = 1
+
+if &diff
+  let g:airline#extensions#tabline#formatter = 'unique_tail_improved'
+endif
+
+" FSwitch
+let fsnonewfiles = 0
+map <F4> :FSHere<CR>
+imap <F4> <ESC>:FSHere<CR>
+
+" autosave
+let g:auto_save = 1
+let g:auto_save_in_insert_mode = 0
+let g:auto_save_no_updatetime = 1
+let g:auto_save_silent = 1
+
+" fugitive
+autocmd QuickFixCmdPost *grep* cwindow

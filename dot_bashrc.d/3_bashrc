@@ -1,0 +1,90 @@
+if [ -f "$PROJECTS_DIR/upstream/bash-sensible/sensible.bash" ]; then
+    . "$PROJECTS_DIR/upstream/bash-sensible/sensible.bash"
+    unset CDPATH
+fi
+
+if [ -f /usr/bin/xrdb ] && [ -f ~/.Xresources ] && [ -n "${DISPLAY+x}" ]; then
+    xrdb -load ~/.Xresources
+fi
+
+[[ $TMUX = "" ]] && export TERM="xterm-256color"
+
+if [ -f  /usr/share/git-core/contrib/completion/git-prompt.sh ]; then
+    GIT_PS1_SHOWDIRTYSTATE=true
+    GIT_PS1_SHOWSTASHSTATE=true
+    GIT_PS1_SHOWUNTRACKEDFILES=true
+    GIT_PS1_SHOWUPSTREAM="auto"
+    GIT_PS1_HIDE_IF_PWD_IGNORED=true
+    # GIT_PS1_SHOWCOLORHINTS=true
+    source  /usr/share/git-core/contrib/completion/git-prompt.sh
+fi
+
+function __prompt_command() {
+    local EXIT="$?"
+    local PROMPT="${WH}$"
+    local PS1_T1=""
+    local PS1_T2=""
+    [ $UID -eq "0" ] && PROMPT="${RE}#"
+
+    # Colors
+    local BLACK='\[\e[30m\]'
+    local RED='\[\e[31m\]'
+    local GREEN='\[\e[32m\]'
+    local LIGHT_GRAY='\[\e[37m\]'
+
+    local BLACK_BG='\[\e[40m\]'
+    local BLUE_BG='\[\e[44m\]'
+    local RED_BG='\[\e[41m\]'
+    local GREEN_BG='\[\e[42m\]'
+    local LIGHT_GRAY_BG='\[\e[47m\]'
+
+    local BOLD='\[\e[1m\]'
+    local RESET='\[\e[0m\]'
+
+    PS1_T1="$BLACK_BG$LIGHT_GRAY\u $LIGHT_GRAY_BG$BLACK \w $RESET$LIGHT_GRAY$GREEN_BG > $LIGHT_GRAY_BG$BLACK \A $RESET"
+    if [ -f /var/run/.containerenv ]; then
+        PS1_T1+="$LIGHT_GRAY$BLUE_BG$BOLD["
+        TOOLBOX_CONTAINER_NAME="c"
+        name=$(. /var/run/.containerenv && echo $name)
+        if [ "$name" != "" ]; then
+            TOOLBOX_CONTAINER_NAME=$name
+        fi
+
+        PS1_T1+="$TOOLBOX_CONTAINER_NAME"
+        PS1_T1+="]$RESET"
+    fi
+
+    if [ -f  /usr/share/git-core/contrib/completion/git-prompt.sh ]; then
+        IFS=" " read -r -a GIT_INFO_ARRAY <<< "$(__git_ps1 %s)"
+        local GIT_BRANCH="${GIT_INFO_ARRAY[0]}"
+        local GIT_FLAGS="${GIT_INFO_ARRAY[1]}"
+
+        # If there are no changes, then the equal sign is appended to the
+        # branch name without. IDK why, but I don't like it.
+        if [ "${GIT_BRANCH: -1}" == "=" ]; then
+            GIT_BRANCH="${GIT_BRANCH[0]::-1}"
+            GIT_FLAGS="="
+        fi
+
+        if [ -n "$GIT_BRANCH" ]; then
+            PS1_T1+="$LIGHT_GRAY$RED_BG$BOLD[$GIT_BRANCH]$RESET"
+        fi
+        if [ -n "$GIT_FLAGS" ]; then
+            PS1_T1+="$LIGHT_GRAY$GREEN_BG$BOLD[$GIT_FLAGS]$RESET"
+        fi
+    fi
+
+    if [ $EXIT != 0 ]; then
+        PS1_T2+="$LIGHT_GRAY$RED$EXIT$RESET"
+    else
+        PS1_T2+="$LIGHT_GRAY$GREEN$EXIT$RESET"
+    fi
+    PS1_T2+=" ${PROMPT} $RESET"
+
+    export PS1="${PS1_T1} \\n${PS1_T2}"
+}
+
+export PROMPT_COMMAND=__prompt_command
+
+export EDITOR=$HOME/.local/bin/vim
+export VISUAL=$HOME/.local/bin/vim

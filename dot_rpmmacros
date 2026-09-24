@@ -1,0 +1,2 @@
+%_topdir      %(echo $HOME)/Projects/rpmbuild
+%__python     %__python3

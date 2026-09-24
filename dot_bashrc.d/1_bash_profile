@@ -1,0 +1,12 @@
+# .bash_profile
+
+export PROJECTS_DIR=$HOME/Projects
+
+# User specific environment and startup programs
+if [ -f /usr/bin/xrdb ] && [ -f ~/.Xresources ] && [ -n "${DISPLAY+x}" ]; then
+    xrdb -load ~/.Xresources
+fi
+
+export PATH=$HOME/.local/bin:$PATH
+
+export GOPATH=$PROJECTS_DIR/playground/go

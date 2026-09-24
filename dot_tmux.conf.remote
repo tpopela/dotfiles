@@ -1,0 +1,4 @@
+# Prefix is left on C-b
+
+# Show the status bar on top
+set -g status-position top

@@ -1,0 +1,109 @@
+shopt -s expand_aliases
+
+lcd() {
+    cd "$1"; ls --color=always --group-directories-first ;
+}
+
+f_find() {
+    find . -type f -exec grep -niH "$@" {} \;
+}
+
+c_find() {
+    find . -type f \( -name "*.c" -o -name "*.cpp" -o -name "*.cc" \) -exec grep -niH "$@" {} \;
+}
+
+h_find() {
+    find . -type f -name "*.h" -exec grep -niH "$@" {} \;
+}
+
+s_find() {
+    find . -type f \( -name "*.c" -o -name "*.cpp" -o -name "*.cc" -o -name "*.h" \) -exec grep -niH "$@" {} \;
+}
+
+gn_find() {
+    find . -type f \( -name "*.gn" -o -name "*.gni" \) -exec grep -niH "$@" {} \;
+}
+
+d_find() {
+    find . -type d -exec grep -niH "$@" {} \;
+}
+
+gg_vim() {
+    vim $(git grep --name-only "$@")
+}
+
+parse_git_branch() {
+    git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/^* //g'
+}
+
+parse_git_branch_ps() {
+    (parse_git_branch) | sed -e "s/\\(.*\\)/\\[\\1\\]/"
+}
+
+parse_git_branch_name() {
+    branch=$(git symbolic-ref --short -q HEAD 2> /dev/null)
+    if [ -z "$branch" ]; then
+        branch=$(git branch --no-color --contains HEAD 2> /dev/null | tail -n 1 | xargs echo)
+    fi
+    echo "$branch"
+}
+
+current_repo_is_dirty() {
+    label=""
+    if [[ $(git diff --shortstat 2> /dev/null | tail -n1) != "" ]]; then
+        label=$label"[*]"
+    fi
+    if [[ $(git diff --cached --shortstat 2> /dev/null | tail -n1) != "" ]]; then
+        label=$label"[+]"
+    fi
+    echo "$label"
+}
+
+gar() {
+    pushd "$PROJECTS_DIR/upstream/getfit" > /dev/null || : && node getfit && popd > /dev/null || :
+}
+
+setup-swapfile() {
+    sudo "$HOME"/.local/bin/setup-swapfile
+}
+
+alias git-me-home='git config user.email tomas.popela@gmail.com'
+
+alias ffind='f_find'
+alias dfind='d_find'
+alias sfind='s_find'
+alias cfind='c_find'
+alias hfind='h_find'
+alias gnfind='gn_find'
+
+alias ggvim='gg_vim'
+
+alias cd='lcd'
+alias cd..='cd ..':
+alias ..='cd ..'
+alias ls='ls --color=always --group-directories-first'
+alias ll='ls --color=always -A -lh --group-directories-first'
+alias ldir='ls -l | grep ^d'
+alias lr='ls -R'
+alias pi='ping -c 4 www.google.com'
+alias svi='sudo vim'
+alias sucp='sudo cp'
+alias srm='sudo rm'
+alias vi='vim'
+alias mcd='mc -u'
+alias du='du -h'
+
+alias cdd="cd $PROJECTS_DIR"
+alias cdf="cd $PROJECTS_DIR/fedora"
+alias cdr="cd $PROJECTS_DIR/rpmbuild"
+
+#if [ -f /usr/bin/koji ]; then
+#    alias koji='kswitch -p tpopela@FEDORAPROJECT.ORG; /usr/bin/koji'
+#fi
+#if [ -f /usr/bin/fedpkg ]; then
+#    alias fedpkg='kswitch -p tpopela@FEDORAPROJECT.ORG; /usr/bin/fedpkg'
+#fi
+
+alias down='git pull && changelog'
+
+alias tweechat='tmux move-window -t 0; weechat'

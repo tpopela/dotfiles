@@ -1,0 +1,57 @@
+! http://lukas.zapletalovi.com/2013/07/hidden-gems-of-xterm.html
+! https://github.com/whiteinge/dotfiles/blob/master/.Xresources
+XTerm*utf8: 2
+XTerm*locale: true
+XTerm*metaSendsEscape: true
+Xterm*saveLines: 100
+XTerm**scrollBar: false
+XTerm*selectToClipboard: true
+XTerm*pointerColor: white
+XTerm*pointerColorBackground: black
+XTerm*cursorColor: white
+XTerm*on3Clicks: regex ([[:alpha:]]+://)?([[:alnum:]!#+,./=?@_~-]|(%[[:xdigit:]][[:xdigit:]]))+
+*VT100*translations: #override Shift <Btn1Up>: exec-formatted("firefox '%t'", PRIMARY)
+XTerm*printerCommand: xterm -T History -e sh -c 'less -r <&3' 3<&0
+!  XTerm*translations: #override Ctrl <Key>slash: print-everything()
+! http://web.archive.org/web/20090130061234/http://phraktured.net/terminal-colors/
+*background: rgb:00/00/00
+*foreground: rgb:ff/ff/ff
+*color0:     rgb:00/00/00
+*color1:     rgb:a8/00/00
+*color2:     rgb:00/a8/00
+*color3:     rgb:a8/54/00
+*color4:     rgb:00/00/a8
+*color5:     rgb:a8/00/a8
+*color6:     rgb:00/a8/a8
+*color7:     rgb:a8/a8/a8
+*color8:     rgb:54/50/54
+*color9:     rgb:f8/54/50
+*color10:    rgb:50/fc/50
+*color11:    rgb:f8/fc/50
+*color12:    rgb:50/54/f8
+*color13:    rgb:f8/54/f8
+*color14:    rgb:50/fc/f8
+*color15:    rgb:f8/fc/f8
+! default
+XTerm*font: -*-terminus-medium-*-*-*-12-*-*-*-*-*-iso10646-*
+! unreadable
+XTerm*font1: -*-terminus-medium-*-*-*-6-*-*-*-*-*-iso10646-*
+! tiny
+XTerm*font2: -*-terminus-medium-*-*-*-8-*-*-*-*-*-iso10646-*
+! small
+XTerm*font3: -*-terminus-medium-*-*-*-12-*-*-*-*-*-iso10646-*
+! medium
+XTerm*font4: -*-terminus-medium-*-*-*-16-*-*-*-*-*-iso10646-*
+! large
+XTerm*font5: -*-terminus-medium-*-*-*-24-*-*-*-*-*-iso10646-*
+! huge
+XTerm*font6: -*-terminus-medium-*-*-*-32-*-*-*-*-*-iso10646-*
+XTerm*.disallowedWindowOps:	20,21,SetXprop
+!
+XTerm*VT100.translations: #override <Btn1Up>: select-end(PRIMARY, CLIPBOARD, CUT_BUFFER0)
+
+XTerm*color4: DodgerBlue1
+XTerm*color12: SteelBlue1
+XTerm*dynamicColors: true
+XTerm*jumpScroll: true
+XTerm*multiScroll: true

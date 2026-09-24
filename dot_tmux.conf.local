@@ -1,0 +1,21 @@
+new-session -A -s main
+#new-window -a -n 'weechat' weechat
+new-window -a -n 'mc' mc
+kill-window -t 0
+new-window -a
+# new-window -a -n 'todo' vimx ~/todo.md
+# new-window -a -n 'status' vimx ~/status.md
+#select-window -t:+1
+
+# Evolution specific
+#set -g update-environment "PATH_DEFAULT"
+
+# Prefix is Alt + a
+set -g prefix m-a
+bind m-a send-prefix
+unbind C-b
+
+# Vi shortcuts support (clipboard, selection, search)
+#set-option -s set-clipboard off
+#bind-key -T copy-mode-vi MouseDragEnd1Pane send-keys -X copy-pipe-and-cancel "xclip -se c -i && xclip -o -se c | xclip -se p -i"
+

@@ -1,0 +1,39 @@
+[user]
+	name = Tomas Popela
+	email = {{ .email }}
+[color]
+	status = auto
+	diff = auto
+	branch = auto
+	ui = true
+[core]
+	deltaBaseCacheLimit = 1G
+	autocrlf = false
+	filemode = false
+	editor = vim
+[alias]
+	st = status -s
+	ap = add -p
+	df = diff
+	l10 = log --oneline -n 10
+	cp = cherry-pick
+	g = grep --break --heading --line-number
+[grep]
+	lineNumber = true
+[pull]
+	rebase = false
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+[tig "color"]
+    date = white default
+#[core]
+#    pager = delta
+#[interactive]
+#    diffFilter = delta --color-only
+#[delta]
+#    navigate = true  # use n and N to move between diff sections
+#[merge]
+#    conflictstyle = zdiff3

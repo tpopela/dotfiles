@@ -1,0 +1,15 @@
+set confirm off
+set verbose off
+
+set history save
+set history filename ~/.gdb_history
+set history remove-duplicates unlimited
+set history size unlimited
+
+set print pretty on
+
+set pagination off
+
+set breakpoint pending on
+
+set auto-load safe-path /
