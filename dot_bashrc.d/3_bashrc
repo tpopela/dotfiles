@@ -85,6 +85,10 @@ function __prompt_command() {
 }
 
 export PROMPT_COMMAND=__prompt_command
+# compat: alias new bash-completion (2.12+) loader to old (2.7) name
+if ! declare -F _comp_complete_load >/dev/null 2>&1 && declare -F _completion_loader >/dev/null 2>&1; then
+    _comp_complete_load() { _completion_loader "$@"; }
+fi
 
 export EDITOR=$HOME/.local/bin/vim
 export VISUAL=$HOME/.local/bin/vim

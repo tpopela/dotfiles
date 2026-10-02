@@ -1,0 +1,28 @@
+#!/bin/bash
+
+if [ -f /var/run/.containerenv ]; then
+    sudo dnf update --refresh
+    exit 0
+fi
+
+if [ -f /var/run/ostree-booted ]; then
+    rpm-ostree upgrade --unchanged-exit-77
+    if [ $? = 0 ]; then
+        rpm-ostree db diff --changelogs
+    fi
+else
+    sudo dnf update
+fi
+printf "%0.s-" {1..80}
+printf "\n"
+flatpak update -y
+printf "%0.s-" {1..80}
+printf "\n"
+flatpak remove --unused
+printf "%0.s-" {1..80}
+printf "\n"
+$HOME/.vim/bundle/update.sh
+printf "%0.s-" {1..80}
+printf "\n"
+fwupdmgr refresh --force
+fwupdmgr get-updates

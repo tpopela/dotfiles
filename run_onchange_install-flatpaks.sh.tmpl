@@ -1,0 +1,69 @@
+#!/bin/bash
+set -eufo pipefail
+
+run_flatpak() {
+  if [ -f /run/.toolboxenv ]; then
+    flatpak-spawn --host flatpak "$@"
+  else
+    flatpak "$@"
+  fi
+}
+
+list_installed() {
+  run_flatpak list --system --app --runtime --columns=application,branch,origin
+}
+
+flatpak_install() {
+  local remote="$1"; shift
+  for app in "$@"; do
+    if ! run_flatpak list --system --app --columns=application | grep -qx "$app"; then
+      run_flatpak install --assumeyes --system "$remote" "$app"
+    fi
+  done
+}
+
+flatpak_switch_remote() {
+  local remote="$1"
+  local ref="$2"
+  local id="${ref%%//*}"
+  local branch=""
+  [ "$ref" != "$id" ] && branch="${ref##*//}"
+  local current
+  current=$(list_installed | awk -v i="$id" -v b="$branch" '$1==i && (b=="" || $2==b) {print $3}')
+  if [ -n "$current" ] && [ "$current" != "$remote" ]; then
+    run_flatpak uninstall --assumeyes --system "$id"
+    current=""
+  fi
+  if [ -z "$current" ]; then
+    run_flatpak install --assumeyes --system "$remote" "$ref"
+  fi
+}
+
+run_flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+run_flatpak remote-modify --enable fedora-testing
+
+firefox_runtime=$(run_flatpak remote-info --show-runtime fedora-testing org.mozilla.firefox)
+firefox_runtime_branch="${firefox_runtime##*/}"
+flatpak_switch_remote fedora-testing org.mozilla.firefox
+flatpak_switch_remote fedora-testing "org.fedoraproject.Platform.Codecs.openh264//$firefox_runtime_branch"
+
+flatpak_install flathub \
+  com.bitwarder.desktop \
+  com.github.junrrein.PDFSlicer \
+{{- if not .work }}
+  com.yubico.yubioath \
+  net.sourceforge.ExtremeTuxRacer \
+  org.gnome.DejaDup \
+  org.libreoffice.LibreOffice \
+{{- end }}
+  io.github.pwr_solaar.solaar \
+  org.gnome.Boxes \
+  org.gnome.gitlab.somas.Apostrophe \
+  org.gimp.GIMP \
+  org.chromium.Chromium \
+  org.chromium.Chromium.Codecs \
+  org.inkscape.Inkscape \
+  org.videolan.VLC
+
+run_flatpak uninstall --assumeyes --system \
+  org.gnome.Calendar || true

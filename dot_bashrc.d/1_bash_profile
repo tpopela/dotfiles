@@ -8,5 +8,7 @@ if [ -f /usr/bin/xrdb ] && [ -f ~/.Xresources ] && [ -n "${DISPLAY+x}" ]; then
 fi
 
 export PATH=$HOME/.local/bin:$PATH
+# opencode
+export PATH=/home/tpopela/.opencode/bin:$PATH
 
 export GOPATH=$PROJECTS_DIR/playground/go

@@ -1,0 +1,12 @@
+#!/bin/bash
+
+session_args=()
+if [ -n "${BW_SESSION:-}" ]; then
+    session_args=(--session "$BW_SESSION")
+fi
+
+if [ -f /run/.toolboxenv ]; then
+    exec flatpak-spawn --host flatpak run --command=bw com.bitwarden.desktop "$@" "${session_args[@]}"
+else
+    exec flatpak run --command=bw com.bitwarden.desktop "$@" "${session_args[@]}"
+fi

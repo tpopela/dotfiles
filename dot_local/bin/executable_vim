@@ -1,0 +1,11 @@
+#!/bin/sh
+
+if [ -f /usr/bin/vimx ]; then
+    /usr/bin/vimx $@;
+else
+    if [ -f /usr/bin/vim ]; then
+        /usr/bin/vim $@;
+    else
+        /usr/bin/vi $@;
+    fi;
+fi

@@ -1,5 +1,20 @@
 shopt -s expand_aliases
 
+chezmoi-init-all() {
+    chezmoi init "$@"
+    if [ -d ~/Projects/projects/dotfiles-work ]; then
+        chezmoi init --source ~/Projects/projects/dotfiles-work "$@"
+    fi
+}
+
+chezmoi-apply-all() {
+    [ -z "$BW_SESSION" ] && export BW_SESSION="$(bw unlock --raw)"
+    chezmoi apply "$@"
+    if [ -d ~/Projects/projects/dotfiles-work ]; then
+        chezmoi apply --source ~/Projects/projects/dotfiles-work "$@"
+    fi
+}
+
 lcd() {
     cd "$1"; ls --color=always --group-directories-first ;
 }
