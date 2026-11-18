@@ -135,7 +135,11 @@ let g:indentLine_faster = 1
 
 set tabstop=4
 set list
-set listchars=tab:<->
+if has('patch-8.1.0759')
+  set listchars=tab:<->
+else
+  set listchars=tab:<-
+endif
 
 set mousemodel=popup
 set clipboard=unnamed,unnamedplus
